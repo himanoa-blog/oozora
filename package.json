@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "prettier": "prettier --write '{src,tests}/**/*.mjs'"
+    "prettier": "prettier --write '{src,tests}/**/*.ts'"
   },
   "dependencies": {
     "express": "^4.16.4",
