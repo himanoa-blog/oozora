@@ -6,7 +6,7 @@
   "author": "himanoa",
   "license": "MIT",
   "private": false,
-  "script": {
+  "scripts": {
     "prettier": "prettier --write '{src,tests}/**/*.js'"
   },
   "dependencies": {

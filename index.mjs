@@ -1,8 +1,8 @@
-import child_process from 'child_process';
-const { spawn } = child_process;
+import express from "express"
 
-const ls = spawn('ls', ['-lh', '/usr']);
-ls.stdout.on('data', data => console.log(`stdout: ${data}`));
-ls.stderr.on('data', data => console.log(`stderr: ${data}`));
-ls.on('close', code => code && console.log(`child process exited with code ${code}.`));
+const app = express()
+
+app.get('/', (req, res) => res.send('Hello World!'))
+
+app.listen(3000, () => console.log('Example app listening on port 3000!'))
 
