@@ -1,0 +1,9 @@
+{
+  "name": "oozora",
+  "version": "1.0.0",
+  "description": "blog server",
+  "main": "index.js",
+  "author": "himanoa",
+  "license": "MIT",
+  "private": false
+}
