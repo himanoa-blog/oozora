@@ -6,6 +6,9 @@
   "author": "himanoa",
   "license": "MIT",
   "private": false,
+  "script": {
+    "prettier": "prettier --write '{src,tests}/**/*.js'"
+  },
   "dependencies": {
     "express": "^4.16.4",
     "markdown-it": "^8.4.2"
