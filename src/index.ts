@@ -11,23 +11,18 @@ import path from "path";
 
 dotenv.config()
 
-const app = express();
-if(app.get('env') === 'production') {
-  const logDirectory = path.resolve(process.env.LOG_DIR || "./log")
-  if(!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory)
-  const stream = fs.createWriteStream(path.resolve(logDirectory, "access.log"), { flags: 'a' });
-  app.use(morgan("common", { stream: stream }));
-} else {
-  app.use(morgan("common"))
+function createLogger() {
+  if(process.env.NODE_ENV === 'production') {
+    const logDirectory = path.resolve(process.env.LOG_DIR || "./log")
+    if(!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory)
+    const stream = fs.createWriteStream(path.resolve(logDirectory, "access.log"), { flags: 'a' });
+    return morgan("common", { stream: stream });
+  } else {
+    return morgan("common")
+  }
 }
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}))
-app.use(bodyParser.json())
-app.use(cookieParser())
-app.use(csrf({ cookie: true }))
-app.use(function (
+function csrfCustomErrorHandler(
   err: any,
   _req: Express.Request,
   res: Express.Response,
@@ -37,9 +32,23 @@ app.use(function (
 
   res.status(403)
   res.send('form tampered with')
-})
+}
 
-applyRouter(app);
+const middlewares = [
+  createLogger(),
+  bodyParser.urlencoded({
+    extended: true
+  }),
+  bodyParser.json(),
+  cookieParser(),
+  csrf({ cookie: true}),
+  bodyParser.urlencoded({
+    extended: true
+  }),
+  csrfCustomErrorHandler
+]
+
+const app = applyRouter(middlewares.reduce((app: Express.Application, middleware) => app.use(middleware), express()))
 
 app.get('/', (_, res) => {
   return res.send("hello")
