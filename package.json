@@ -8,7 +8,8 @@
   "private": false,
   "scripts": {
     "prettier": "prettier --write '{src,tests}/**/*.ts'",
-    "watch": "nodemon"
+    "watch": "nodemon",
+    "build": "tsc"
   },
   "dependencies": {
     "express": "^4.16.4",
