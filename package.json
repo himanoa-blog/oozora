@@ -9,7 +9,8 @@
   "scripts": {
     "prettier": "prettier --write '{src,tests}/**/*.ts'",
     "watch": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "dependencies": {
     "express": "^4.16.4",
