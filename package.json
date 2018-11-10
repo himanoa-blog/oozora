@@ -13,10 +13,17 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express-session": "^1.15.11",
+    "@types/simple-oauth2": "^2.2.0",
+    "axios": "^0.18.0",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "fp-ts": "^1.10.0",
+    "jwt-simple": "^0.5.5",
     "markdown-it": "^8.4.2",
-    "promise-mysql": "^3.3.1"
+    "promise-mysql": "^3.3.1",
+    "simple-oauth2": "^2.2.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",

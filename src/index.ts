@@ -3,6 +3,7 @@ import * as Express from "express";
 import csrf from "csurf";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import expressSession from "express-session";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import fs from "fs";
@@ -26,30 +27,31 @@ export function createLogger() {
   }
 }
 
-export function csrfCustomErrorHandler(
-  err: any,
-  _req: Express.Request,
+export function enhanceToken(
+  req: Express.Request,
   res: Express.Response,
   next: Express.NextFunction
 ) {
-  if (err.code !== "EBADCSRFTOKEN") return next(err);
-
-  res.status(403);
-  res.send("form tampered with");
+  res.header("token", req.csrfToken());
+  next();
 }
 
 const middlewares = [
   createLogger(),
-  bodyParser.urlencoded({
-    extended: true
-  }),
   bodyParser.json(),
   cookieParser(),
-  csrf({ cookie: true }),
-  bodyParser.urlencoded({
-    extended: true
-  }),
-  csrfCustomErrorHandler
+  expressSession({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 60 * 30
+    }
+  })
+  // csrf({cookie: false}),
+  // enhanceToken
 ];
 
 const app = applyRouter(
