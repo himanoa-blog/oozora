@@ -9,16 +9,19 @@ import morgan from "morgan";
 import fs from "fs";
 import path from "path";
 
-dotenv.config()
+dotenv.config();
 
 function createLogger() {
-  if(process.env.NODE_ENV === 'production') {
-    const logDirectory = path.resolve(process.env.LOG_DIR || "./log")
-    if(!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory)
-    const stream = fs.createWriteStream(path.resolve(logDirectory, "access.log"), { flags: 'a' });
+  if (process.env.NODE_ENV === "production") {
+    const logDirectory = path.resolve(process.env.LOG_DIR || "./log");
+    if (!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory);
+    const stream = fs.createWriteStream(
+      path.resolve(logDirectory, "access.log"),
+      { flags: "a" }
+    );
     return morgan("common", { stream: stream });
   } else {
-    return morgan("common")
+    return morgan("common");
   }
 }
 
@@ -28,10 +31,10 @@ function csrfCustomErrorHandler(
   res: Express.Response,
   next: Express.NextFunction
 ) {
-  if (err.code !== 'EBADCSRFTOKEN') return next(err)
+  if (err.code !== "EBADCSRFTOKEN") return next(err);
 
-  res.status(403)
-  res.send('form tampered with')
+  res.status(403);
+  res.send("form tampered with");
 }
 
 const middlewares = [
@@ -41,17 +44,22 @@ const middlewares = [
   }),
   bodyParser.json(),
   cookieParser(),
-  csrf({ cookie: true}),
+  csrf({ cookie: true }),
   bodyParser.urlencoded({
     extended: true
   }),
   csrfCustomErrorHandler
-]
+];
 
-const app = applyRouter(middlewares.reduce((app: Express.Application, middleware) => app.use(middleware), express()))
+const app = applyRouter(
+  middlewares.reduce(
+    (app: Express.Application, middleware) => app.use(middleware),
+    express()
+  )
+);
 
-app.get('/', (_, res) => {
-  return res.send("hello")
-})
+app.get("/", (_, res) => {
+  return res.send("hello");
+});
 
-app.listen(3000)
+app.listen(3000);
