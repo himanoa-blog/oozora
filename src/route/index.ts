@@ -10,7 +10,7 @@ router.get("/health", (req, res) => {
 const endPoints = [login, { path: "/", router }];
 
 function applyRouter(app: Express.Application) {
-  endPoints.reduce((app, endPoint) => app.use(endPoint.path, endPoint.router), app)
+  return endPoints.reduce((app, endPoint) => app.use(endPoint.path, endPoint.router), app)
 }
 
 export default applyRouter;
