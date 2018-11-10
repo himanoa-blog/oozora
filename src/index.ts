@@ -7,7 +7,6 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
-import * as mysql from "promise-mysql";
 
 import applyRouter from "./route";
 
@@ -59,8 +58,6 @@ const app = applyRouter(
     express()
   )
 );
-
-app.set("mysqlPool", pool);
 
 app.get("/", (_, res) => {
   return res.send("hello");
