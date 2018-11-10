@@ -6,7 +6,8 @@
     "strict": true,
     "esModuleInterop": true,
     "lib": [
-      "esnext"
+      "esnext",
+      "ES2015"
     ]
   },
   "files": [
