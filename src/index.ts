@@ -3,11 +3,13 @@ import * as Express from "express";
 import csrf from "csurf";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import applyRouter from "./route";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import * as mysql from "promise-mysql";
+
+import applyRouter from "./route";
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ const app = applyRouter(
     express()
   )
 );
+
+app.set("mysqlPool", pool);
 
 app.get("/", (_, res) => {
   return res.send("hello");
