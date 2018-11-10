@@ -12,7 +12,7 @@ import applyRouter from "./route";
 
 dotenv.config();
 
-function createLogger() {
+export function createLogger() {
   if (process.env.NODE_ENV === "production") {
     const logDirectory = path.resolve(process.env.LOG_DIR || "./log");
     if (!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory);
@@ -26,7 +26,7 @@ function createLogger() {
   }
 }
 
-function csrfCustomErrorHandler(
+export function csrfCustomErrorHandler(
   err: any,
   _req: Express.Request,
   res: Express.Response,

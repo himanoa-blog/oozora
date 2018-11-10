@@ -1402,6 +1402,11 @@ forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
 
+fp-ts@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-1.10.0.tgz#f249f07a167f4c13a96baf01794f7e0753de4225"
+  integrity sha512-ZOdfxiFgjipHEQKMam06/+BVneM/UKQDhoXAH2I6VvwqY4p0awswQcDgopvfE/jPeR7Aigv1aIv8U5awSXSw8A==
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/fragment-cache/-/fragment-cache-0.2.1.tgz#4290fad27f13e89be7f33799c6bc5a0abfff0d19"
