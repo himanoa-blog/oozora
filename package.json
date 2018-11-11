@@ -17,6 +17,7 @@
     "@types/express-session": "^1.15.11",
     "@types/simple-oauth2": "^2.2.0",
     "axios": "^0.18.0",
+    "date-fns": "^1.29.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "fp-ts": "^1.10.0",
