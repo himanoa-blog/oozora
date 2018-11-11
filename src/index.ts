@@ -45,13 +45,13 @@ const middlewares = [
     resave: false,
     saveUninitialized: false,
     cookie: {
-      httpOnly: true,
+      httpOnly: false,
       secure: false,
       maxAge: 1000 * 60 * 30
     }
-  })
-  // csrf({cookie: false}),
-  // enhanceToken
+  }),
+  csrf({cookie: false}),
+  enhanceToken
 ];
 
 const app = applyRouter(

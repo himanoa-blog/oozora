@@ -10,7 +10,6 @@ import { verifyToken } from "../service/login";
 const router = Express.Router();
 
 router.get("/oauth/callback", (req, res) => {
-  console.log("hello");
   const a = JSON.stringify({
     code: req.query.code,
     state: req.query.state
@@ -42,9 +41,9 @@ router.post("/oauth/google", async (req, res) => {
     const session = req.session || { state: "" };
     const bodyState = req.body.state || "";
     const bodyCode = req.body.code || "";
-    // if(session.state !== bodyState || !bodyCode) {
-    // 	return res.send(400)
-    // }
+    if(session.state !== bodyState || !bodyCode) {
+    	return res.sendStatus(400)
+    }
     const googleOAuth = createGoogleOAuthClient({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
