@@ -37,32 +37,36 @@ router.get("/oauth/google", (req, res, _next) => {
   );
 });
 
-router.post("/oauth/google", wrapAsync(async (req, res) => {
-  try {
-    const session = req.session || { state: "" };
-    const bodyState = req.body.state || "";
-    const bodyCode = req.body.code || "";
-    if(session.state !== bodyState || !bodyCode) {
-    	return res.sendStatus(400)
+router.post(
+  "/oauth/google",
+  wrapAsync(async (req, res) => {
+    try {
+      const session = req.session || { state: "" };
+      const bodyState = req.body.state || "";
+      const bodyCode = req.body.code || "";
+      if (session.state !== bodyState || !bodyCode) {
+        return res.sendStatus(400);
+      }
+      const googleOAuth = createGoogleOAuthClient({
+        clientId: process.env.GOOGLE_CLIENT_ID || "",
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+        redirectUri: process.env.GOOGLE_REDIRECT_URL || "",
+        tokenUrl: process.env.GOOGLE_TOKEN_URL || "",
+        certsUrl: process.env.GOOGLE_CERTS_URL || ""
+      });
+      const token = await verifyToken(req.body, {
+        getToken: googleOAuth.getToken,
+        getCerts: googleOAuth.getCert,
+        decoder: (token, n, alg) =>
+          decode(token, n, true, alg as jwt.TAlgorithm)
+      });
+      console.dir(token);
+      res.json(token);
+    } catch (err) {
+      res.json({ error: err.toString() });
     }
-    const googleOAuth = createGoogleOAuthClient({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-      redirectUri: process.env.GOOGLE_REDIRECT_URL || "",
-      tokenUrl: process.env.GOOGLE_TOKEN_URL || "",
-      certsUrl: process.env.GOOGLE_CERTS_URL || ""
-    });
-    const token = await verifyToken(req.body, {
-      getToken: googleOAuth.getToken,
-      getCerts: googleOAuth.getCert,
-      decoder: (token, n, alg) => decode(token, n, true, alg as jwt.TAlgorithm)
-    });
-    console.dir(token);
-    res.json(token);
-  } catch (err) {
-    res.json({ error: err.toString() });
-  }
-}));
+  })
+);
 
 export default {
   path: "/login",

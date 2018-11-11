@@ -27,7 +27,7 @@ test("tokenVerify#期待したトークンが返ってくること", async () =>
     decoder: (_token: string, _n: string, _alg: string): any => ({ sub: "a" })
   };
   const actual = await verifyToken(req, dep);
-  expect(actual).toEqual({sub: "a"});
+  expect(actual).toEqual({ sub: "a" });
 });
 
 test("tokenVerify#envelopeをsplitした時に2以下のlengthの場合例外を投げること", async () => {
@@ -53,7 +53,9 @@ test("tokenVerify#envelopeをsplitした時に2以下のlengthの場合例外を
     getToken: (_code: string): Promise<string> =>
       Promise.resolve(`${dummyEnvelope}.a`),
     getCerts: (): Promise<Certs> => Promise.resolve(dummyCerts),
-    decoder: (_token: string, _n: string, _alg: string): any => { sub: "a" }
+    decoder: (_token: string, _n: string, _alg: string): any => {
+      sub: "a";
+    }
   };
   const actual = verifyToken(req, dep);
   await expect(actual).rejects.toThrow();
@@ -78,7 +80,9 @@ test("tokenVerify#envelopeにkidがない場合は例外を投げること", asy
     getToken: (_code: string): Promise<string> =>
       Promise.resolve(`${dummyEnvelope}.a.a`),
     getCerts: (): Promise<Certs> => Promise.resolve(dummyCerts),
-    decoder: (_token: string, _n: string, _alg: string): any => {sub: "a"}
+    decoder: (_token: string, _n: string, _alg: string): any => {
+      sub: "a";
+    }
   };
   const actual = verifyToken(req, dep);
   await expect(actual).rejects.toThrow();

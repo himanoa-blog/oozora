@@ -12,7 +12,6 @@ import path from "path";
 import applyRouter from "./route";
 import { errorHandler } from "./route/error-handler";
 
-
 dotenv.config();
 
 export function createLogger() {
@@ -52,7 +51,7 @@ const middlewares = [
       maxAge: 1000 * 60 * 30
     }
   }),
-  csrf({cookie: false}),
+  csrf({ cookie: false }),
   enhanceToken,
   errorHandler
 ];
