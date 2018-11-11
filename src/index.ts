@@ -10,6 +10,8 @@ import fs from "fs";
 import path from "path";
 
 import applyRouter from "./route";
+import { errorHandler } from "./route/error-handler";
+
 
 dotenv.config();
 
@@ -51,7 +53,8 @@ const middlewares = [
     }
   }),
   csrf({cookie: false}),
-  enhanceToken
+  enhanceToken,
+  errorHandler
 ];
 
 const app = applyRouter(

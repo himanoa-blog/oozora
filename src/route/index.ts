@@ -1,9 +1,10 @@
 import * as Express from "express";
 import login from "./login";
+import { wrapAsync } from "./error-handler";
 
 const router = Express.Router();
 
-router.get("/health", (req, res) => {
+router.get("/health", async (req, res) => {
   res.send("live!");
 });
 

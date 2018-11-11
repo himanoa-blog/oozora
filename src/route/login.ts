@@ -6,6 +6,7 @@ import * as jwt from "jwt-simple";
 
 import { createGoogleOAuthClient } from "../ext/oauth/google";
 import { verifyToken } from "../service/login";
+import { wrapAsync } from "./error-handler";
 
 const router = Express.Router();
 
@@ -30,13 +31,13 @@ router.get("/oauth/google", (req, res, _next) => {
     state
   });
   req!.session!.state = state;
-  res.redirect(
+  return res.redirect(
     303,
     `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
   );
 });
 
-router.post("/oauth/google", async (req, res) => {
+router.post("/oauth/google", wrapAsync(async (req, res) => {
   try {
     const session = req.session || { state: "" };
     const bodyState = req.body.state || "";
@@ -61,7 +62,7 @@ router.post("/oauth/google", async (req, res) => {
   } catch (err) {
     res.json({ error: err.toString() });
   }
-});
+}));
 
 export default {
   path: "/login",
