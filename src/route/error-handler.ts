@@ -1,5 +1,4 @@
 import * as Express from "express";
-import * as mysql from "promise-mysql";
 
 export interface ErrorResponse {
   error: string;
