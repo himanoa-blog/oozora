@@ -7,6 +7,7 @@ import * as jwt from "jwt-simple";
 import { createGoogleOAuthClient } from "../ext/oauth/google";
 import { verifyToken } from "../service/login";
 import { wrapAsync } from "./error-handler";
+import { LoginRequest, parseLoginRequest } from "../model/login-request";
 
 const router = Express.Router();
 
@@ -41,11 +42,16 @@ router.post(
   "/oauth/google",
   wrapAsync(async (req, res) => {
     try {
-      const session = req.session || { state: "" };
-      const bodyState = req.body.state || "";
-      const bodyCode = req.body.code || "";
-      if (session.state !== bodyState || !bodyCode) {
-        return res.sendStatus(400);
+      const session = req.session;
+      if(!session) throw new Error("session is not found");
+      const loginRequestE = parseLoginRequest(req.body)
+      if(loginRequestE[0]) return res.status(400).json({
+        "error": "必要なデータが足りません"
+      })
+      if (session.state !== loginRequestE[1]) {
+        return res.status(400).json({
+          "error": "stateが一致しませんでした"
+        });
       }
       const googleOAuth = createGoogleOAuthClient({
         clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -60,7 +66,6 @@ router.post(
         decoder: (token, n, alg) =>
           decode(token, n, true, alg as jwt.TAlgorithm)
       });
-      console.dir(token);
       res.json(token);
     } catch (err) {
       res.json({ error: err.toString() });
