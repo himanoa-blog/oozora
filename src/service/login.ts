@@ -3,15 +3,15 @@ import { LoginUser } from "../model/login-user";
 import { Cert, Certs } from "../ext/oauth";
 import { UserRepository } from "../repository/user-repository";
 
-export class LoginServiceException extends Error{
-  public name = 'LoginServiceException'
+export class LoginServiceException extends Error {
+  public name = "LoginServiceException";
 
   constructor(public message: string) {
     super(message);
   }
 
-  toStirng(){
-    return `${this.name}:${this.message}`
+  toStirng() {
+    return `${this.name}:${this.message}`;
   }
 }
 
@@ -53,18 +53,18 @@ export async function verifyToken(
 
 export async function login(
   req: LoginRequest,
-  dep: LoginDep,
+  dep: LoginDep
 ): Promise<LoginUser> {
   try {
     const { sub: uid } = await verifyToken(req, dep.verifyTokenDep);
     const user = await dep.userRepository.fromUid(uid);
     const token = dep.generateToken();
-    dep.userRepository.createToken(user, token)
+    dep.userRepository.createToken(user, token);
     return {
       id: user.id,
       token,
       name: user.name
-    }
+    };
   } catch (e) {
     throw new LoginServiceException(e.message);
   }
