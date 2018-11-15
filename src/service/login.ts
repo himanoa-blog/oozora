@@ -22,7 +22,7 @@ export interface TokenPayload {
 export interface VerifyTokenDep {
   getToken: (code: string) => Promise<string>;
   getCerts: () => Promise<Certs>;
-  decoder: (token: string, n: string, alg: string) => TokenPayload;
+  decoder: (token: string, n: string, alg: any) => any;
 }
 
 export interface LoginDep {

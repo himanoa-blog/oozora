@@ -3,11 +3,15 @@ import { createHash } from "crypto";
 import * as url from "url";
 import { decode } from "jwt-simple";
 import * as jwt from "jwt-simple";
+import uuid from "uuid/v4"
+import * as ExpressSession from "express-session"
 
 import { createGoogleOAuthClient } from "../ext/oauth/google";
-import { verifyToken } from "../service/login";
+import { verifyToken, login } from "../service/login";
 import { wrapAsync } from "./error-handler";
 import { LoginRequest, parseLoginRequest } from "../model/login-request";
+import { MySqlUserRepository } from "../repository/mysql-user-repository";
+import pool from "../infra/database/mysql";
 
 const router = Express.Router();
 
@@ -42,7 +46,7 @@ router.post(
   "/oauth/google",
   wrapAsync(async (req, res) => {
     try {
-      const session = req.session;
+      const session = req.session!;
       if(!session) throw new Error("session is not found");
       const loginRequestE = parseLoginRequest(req.body)
       if(loginRequestE[0]) return res.status(400).json({
@@ -60,13 +64,17 @@ router.post(
         tokenUrl: process.env.GOOGLE_TOKEN_URL || "",
         certsUrl: process.env.GOOGLE_CERTS_URL || ""
       });
-      const token = await verifyToken(req.body, {
-        getToken: googleOAuth.getToken,
-        getCerts: googleOAuth.getCert,
-        decoder: (token, n, alg) =>
-          decode(token, n, true, alg as jwt.TAlgorithm)
-      });
-      res.json(token);
+      const currentUser = login(loginRequestE[1] as LoginRequest, {
+        verifyTokenDep: {
+          getToken: googleOAuth.getToken,
+          getCerts: googleOAuth.getCert,
+          decoder: (token: string, n: string, alg: any) =>
+            decode(token, n, true, alg as jwt.TAlgorithm)
+        },
+        generateToken: uuid,
+        userRepository: new MySqlUserRepository(pool)
+      })
+      res.json(currentUser);
     } catch (err) {
       res.json({ error: err.toString() });
     }
