@@ -37,6 +37,21 @@ export function enhanceToken(
   next();
 }
 
+function cors(
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) {
+  res.header(
+    "Access-Control-Allow-Origin",
+    process.env.CORS_URLS || "http://localhost:4444"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+}
 const middlewares = [
   createLogger(),
   bodyParser.json(),
@@ -51,6 +66,7 @@ const middlewares = [
       maxAge: 1000 * 60 * 30
     }
   }),
+  cors,
   csrf({ cookie: false }),
   enhanceToken,
   errorHandler

@@ -3,8 +3,8 @@ import { createHash } from "crypto";
 import * as url from "url";
 import { decode } from "jwt-simple";
 import * as jwt from "jwt-simple";
-import uuid from "uuid/v4"
-import * as ExpressSession from "express-session"
+import uuid from "uuid/v4";
+import * as ExpressSession from "express-session";
 
 import { createGoogleOAuthClient } from "../ext/oauth/google";
 import { verifyToken, login } from "../service/login";
@@ -36,10 +36,9 @@ router.get("/oauth/google", (req, res, _next) => {
     state
   });
   req!.session!.state = state;
-  return res.redirect(
-    303,
-    `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  );
+  return res.json({
+    url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+  });
 });
 
 router.post(
@@ -47,14 +46,15 @@ router.post(
   wrapAsync(async (req, res) => {
     try {
       const session = req.session!;
-      if(!session) throw new Error("session is not found");
-      const loginRequestE = parseLoginRequest(req.body)
-      if(loginRequestE[0]) return res.status(400).json({
-        "error": "必要なデータが足りません"
-      })
+      if (!session) throw new Error("session is not found");
+      const loginRequestE = parseLoginRequest(req.body);
+      if (loginRequestE[0])
+        return res.status(400).json({
+          error: "必要なデータが足りません"
+        });
       if (session.state !== loginRequestE[1]) {
         return res.status(400).json({
-          "error": "stateが一致しませんでした"
+          error: "stateが一致しませんでした"
         });
       }
       const googleOAuth = createGoogleOAuthClient({
@@ -73,7 +73,7 @@ router.post(
         },
         generateToken: uuid,
         userRepository: new MySqlUserRepository(pool)
-      })
+      });
       res.json(currentUser);
     } catch (err) {
       res.json({ error: err.toString() });
