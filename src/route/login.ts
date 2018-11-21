@@ -11,7 +11,9 @@ import { verifyToken, login } from "../service/login";
 import { wrapAsync } from "./error-handler";
 import { LoginRequest, parseLoginRequest } from "../model/login-request";
 import { MySqlUserRepository } from "../repository/mysql-user-repository";
-import pool from "../infra/database/mysql";
+import { MemcachedOAuthStateRepository } from "../repository/memcached-oauth-state-repository"
+import sqlPool from "../infra/database/mysql";
+import memcachedConn from "../infra/database/memcached";
 
 const router = Express.Router();
 
@@ -19,7 +21,7 @@ router.get("/oauth/setup", (req, res) => {
   res.sendStatus(200)
 });
 
-router.get("/oauth/google", (req, res, _next) => {
+router.get("/oauth/google", async (req, res, _next) => {
   const salt = "a";
   const state = createHash("sha256")
     .update(`${salt}${Math.random()}${+new Date()}`)
@@ -32,6 +34,7 @@ router.get("/oauth/google", (req, res, _next) => {
     state
   });
   req!.session!.state = state;
+  await new MemcachedOAuthStateRepository(memcachedConn).write(state)
   return res.json({
     url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
   });
@@ -44,13 +47,12 @@ router.post(
       const session = req.session!;
       if (!session) throw new Error("session is not found");
       const loginRequestE = parseLoginRequest(req.body);
+      const oauthRepository = new MemcachedOAuthStateRepository(memcachedConn);
       if (loginRequestE[0])
         return res.status(400).json({
           error: "必要なデータが足りません"
         });
-      if (session.state !== loginRequestE[1]) {
-        console.dir(req.session)
-        console.dir(loginRequestE[1])
+      if (!await oauthRepository.exists(loginRequestE[1]!.state)) {
         return res.status(400).json({
           error: "stateが一致しませんでした"
         });
@@ -62,7 +64,7 @@ router.post(
         tokenUrl: process.env.GOOGLE_TOKEN_URL || "",
         certsUrl: process.env.GOOGLE_CERTS_URL || ""
       });
-      const currentUser = login(loginRequestE[1] as LoginRequest, {
+      const currentUser = await login(loginRequestE[1] as LoginRequest, {
         verifyTokenDep: {
           getToken: googleOAuth.getToken,
           getCerts: googleOAuth.getCert,
@@ -70,11 +72,11 @@ router.post(
             decode(token, n, true, alg as jwt.TAlgorithm)
         },
         generateToken: uuid,
-        userRepository: new MySqlUserRepository(pool)
+        userRepository: new MySqlUserRepository(sqlPool)
       });
       res.json(currentUser);
     } catch (err) {
-      res.json({ error: err.toString() });
+      res.status(400).json({ error: err.toString() });
     }
   })
 );

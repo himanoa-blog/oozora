@@ -3,6 +3,12 @@ import { User } from "../model/user";
 import { Token } from "../model/token";
 import * as mysql from "promise-mysql";
 
+export class UserNotFound extends Error {
+  constructor(msg: string) {
+    super(msg)
+  }
+}
+
 export class MySqlUserRepository implements UserRepository {
   constructor(private readonly conn: mysql.Pool) {}
 
@@ -20,7 +26,8 @@ export class MySqlUserRepository implements UserRepository {
 
   async fromUid(uid: string): Promise<User> {
     const query = "SELECT * from `users` WHERE `uid`=? LIMIT 1;";
-    const result = (await this.conn.query(query, [uid]))[0];
+    const result = (await this.conn.query(query, [uid]))[0]
+    if(!result) { throw new UserNotFound(`uid ${uid} is not found`) }
     return {
       id: result.id,
       name: result.name,

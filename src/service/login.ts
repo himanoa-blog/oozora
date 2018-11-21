@@ -56,8 +56,12 @@ export async function login(
   dep: LoginDep
 ): Promise<LoginUser> {
   try {
-    const { sub: uid } = await verifyToken(req, dep.verifyTokenDep);
-    const user = await dep.userRepository.fromUid(uid);
+    const { sub } = await verifyToken(req, dep.verifyTokenDep).catch(err => {
+      throw err
+    });
+    const user = await dep.userRepository.fromUid(sub).catch(err => {
+      throw err;
+    })
     const token = dep.generateToken();
     dep.userRepository.createToken(user, token);
     return {
