@@ -14,6 +14,10 @@ import { errorHandler } from "./route/error-handler";
 
 dotenv.config();
 
+const secret = process.env.SECRET;
+if(!secret) {
+  throw new Error("SECRET enviroment variable must not be empty.")
+}
 export function createLogger() {
   if (process.env.NODE_ENV === "production") {
     const logDirectory = path.resolve(process.env.LOG_DIR || "./log");
@@ -33,7 +37,7 @@ export function enhanceToken(
   res: Express.Response,
   next: Express.NextFunction
 ) {
-  res.header("token", req.csrfToken());
+  res.header("X-XSRF-TOKEN", req.csrfToken());
   next();
 }
 
@@ -48,8 +52,16 @@ function cors(
   );
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token",
   );
+  res.header(
+    "Access-Control-Expose-Headers",
+    "Content-Length, X-XSRF-TOKEN, x-xsrf-token"
+  )
+  res.header(
+    "Access-Control-Allow-Credentials",
+    "true"
+  )
   next();
 }
 const middlewares = [
@@ -57,17 +69,19 @@ const middlewares = [
   bodyParser.json(),
   cookieParser(),
   expressSession({
-    secret: "secret",
+    secret: secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
       maxAge: 1000 * 60 * 30
     }
   }),
   cors,
-  csrf({ cookie: false }),
+  csrf({
+    cookie: false
+  }),
   enhanceToken,
   errorHandler
 ];

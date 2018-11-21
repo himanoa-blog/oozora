@@ -15,12 +15,8 @@ import pool from "../infra/database/mysql";
 
 const router = Express.Router();
 
-router.get("/oauth/callback", (req, res) => {
-  const a = JSON.stringify({
-    code: req.query.code,
-    state: req.query.state
-  });
-  res.send(a);
+router.get("/oauth/setup", (req, res) => {
+  res.sendStatus(200)
 });
 
 router.get("/oauth/google", (req, res, _next) => {
@@ -53,6 +49,8 @@ router.post(
           error: "必要なデータが足りません"
         });
       if (session.state !== loginRequestE[1]) {
+        console.dir(req.session)
+        console.dir(loginRequestE[1])
         return res.status(400).json({
           error: "stateが一致しませんでした"
         });
