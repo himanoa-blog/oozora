@@ -15,7 +15,9 @@ export function wrapAsync(
     req: Express.Request,
     res: Express.Response,
     next: Express.NextFunction
-  ) => fn(req, res, next).catch(err => next(err));
+  ) => fn(req, res, next).catch(err =>{
+    res.json({ error: err.message });
+  });
 }
 
 export function errorHandler(
@@ -24,6 +26,5 @@ export function errorHandler(
   res: Express.Response,
   _next: Express.NextFunction
 ) {
-  console.error(err);
-  res.status(500).json({ error: err.message });
+  console.dir(err)
 }
