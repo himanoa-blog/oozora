@@ -57,11 +57,11 @@ export async function login(
 ): Promise<LoginUser> {
   try {
     const { sub } = await verifyToken(req, dep.verifyTokenDep).catch(err => {
-      throw err
+      throw err;
     });
     const user = await dep.userRepository.fromUid(sub).catch(err => {
       throw err;
-    })
+    });
     const token = dep.generateToken();
     dep.userRepository.createToken(user, token);
     return {

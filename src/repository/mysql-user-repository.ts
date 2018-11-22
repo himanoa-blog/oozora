@@ -5,7 +5,7 @@ import * as mysql from "promise-mysql";
 
 export class UserNotFound extends Error {
   constructor(msg: string) {
-    super(msg)
+    super(msg);
   }
 }
 
@@ -26,8 +26,10 @@ export class MySqlUserRepository implements UserRepository {
 
   async fromUid(uid: string): Promise<User> {
     const query = "SELECT * from `users` WHERE `uid`=? LIMIT 1;";
-    const result = (await this.conn.query(query, [uid]))[0]
-    if(!result) { throw new UserNotFound(`uid ${uid} is not found`) }
+    const result = (await this.conn.query(query, [uid]))[0];
+    if (!result) {
+      throw new UserNotFound(`uid ${uid} is not found`);
+    }
     return {
       id: result.id,
       name: result.name,

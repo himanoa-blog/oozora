@@ -11,14 +11,14 @@ import { verifyToken, login } from "../service/login";
 import { wrapAsync } from "./error-handler";
 import { LoginRequest, parseLoginRequest } from "../model/login-request";
 import { MySqlUserRepository } from "../repository/mysql-user-repository";
-import { MemcachedOAuthStateRepository } from "../repository/memcached-oauth-state-repository"
+import { MemcachedOAuthStateRepository } from "../repository/memcached-oauth-state-repository";
 import sqlPool from "../infra/database/mysql";
 import memcachedConn from "../infra/database/memcached";
 
 const router = Express.Router();
 
 router.get("/oauth/setup", (req, res) => {
-  res.sendStatus(200)
+  res.sendStatus(200);
 });
 
 router.get("/oauth/google", async (req, res, _next) => {
@@ -34,7 +34,7 @@ router.get("/oauth/google", async (req, res, _next) => {
     state
   });
   req!.session!.state = state;
-  await new MemcachedOAuthStateRepository(memcachedConn).write(state)
+  await new MemcachedOAuthStateRepository(memcachedConn).write(state);
   return res.json({
     url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
   });
@@ -52,7 +52,7 @@ router.post(
         return res.status(400).json({
           error: "必要なデータが足りません"
         });
-      if (!await oauthRepository.exists(loginRequestE[1]!.state)) {
+      if (!(await oauthRepository.exists(loginRequestE[1]!.state))) {
         return res.status(400).json({
           error: "stateが一致しませんでした"
         });

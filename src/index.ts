@@ -15,8 +15,8 @@ import { errorHandler } from "./route/error-handler";
 dotenv.config();
 
 const secret = process.env.SECRET;
-if(!secret) {
-  throw new Error("SECRET enviroment variable must not be empty.")
+if (!secret) {
+  throw new Error("SECRET enviroment variable must not be empty.");
 }
 export function createLogger() {
   if (process.env.NODE_ENV === "production") {
@@ -52,16 +52,13 @@ function cors(
   );
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token",
+    "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token"
   );
   res.header(
     "Access-Control-Expose-Headers",
     "Content-Length, X-XSRF-TOKEN, x-xsrf-token"
-  )
-  res.header(
-    "Access-Control-Allow-Credentials",
-    "true"
-  )
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
   next();
 }
 const middlewares = [
