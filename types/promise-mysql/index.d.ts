@@ -7,8 +7,8 @@ export function createPool(config: mysql.PoolConfig | string): Pool;
 export { Types, escape, escapeId, format, ConnectionOptions, ConnectionConfig, PoolConfig } from 'mysql';
 
 export interface QueryFunction {
-    (query: mysql.Query | string | mysql.QueryOptions): Promise<{[index in number]: { [keys in string]: any}}>;
-    (options: string, values: any): Promise<{[index in number]: { [keys in string]: any}}>;
+    (query: mysql.Query | string | mysql.QueryOptions): Promise<{ [keys in string]: any}[]>;
+    (options: string, values: any): Promise<{ [keys in string]: any}[]>;
 }
 
 export interface Connection {
