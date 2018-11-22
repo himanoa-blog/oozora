@@ -1,5 +1,6 @@
 import * as Express from "express";
 import login from "./login";
+import entries from "./entry";
 import { wrapAsync } from "./error-handler";
 
 const router = Express.Router();
@@ -8,7 +9,7 @@ router.get("/health", async (req, res) => {
   res.send("live!");
 });
 
-const endPoints = [login, { path: "/", router }];
+const endPoints = [login, entries, { path: "/", router }];
 
 function applyRouter(app: Express.Application) {
   return endPoints.reduce(

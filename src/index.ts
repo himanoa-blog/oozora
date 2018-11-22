@@ -52,11 +52,11 @@ function cors(
   );
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token"
+    "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token, Authorization"
   );
   res.header(
     "Access-Control-Expose-Headers",
-    "Content-Length, X-XSRF-TOKEN, x-xsrf-token"
+    "Content-Length, X-XSRF-TOKEN, x-xsrf-token, Authorization"
   );
   res.header("Access-Control-Allow-Credentials", "true");
   next();
@@ -92,6 +92,10 @@ const app = applyRouter(
 
 app.get("/", (_, res) => {
   return res.send("hello");
+});
+
+app.options('*', (req, res) => {
+  res.sendStatus(200);
 });
 
 app.listen(3000);

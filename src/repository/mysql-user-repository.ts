@@ -42,20 +42,24 @@ export class MySqlUserRepository implements UserRepository {
   async fromToken(token: string): Promise<User> {
     const query =
       "SELECT * FROM `tokens` JOIN `users` ON `users`.`id`=`tokens`.`user_id` WHERE `token`=? LIMIT 1;";
-    const result = (await this.conn.query(query, [token]))[0];
+    const result = await this.conn.query(query, [token]);
+    console.log(result)
+    if(!result[0]) {
+      throw new UserNotFound(`token ${token} is not found`);
+    }
     return {
-      id: result.id,
-      name: result.name,
-      uid: result.uid,
-      createdAt: result.created_at,
-      updatedAt: result.updated_at
+      id: result[0].id,
+      name: result[0].name,
+      uid: result[0].uid,
+      createdAt: result[0].created_at,
+      updatedAt: result[0].updated_at
     };
   }
 
   async createToken(user: User, token: string): Promise<number> {
     const insertQuery =
       "INSERT INTO `tokens` (`user_id`, `token`) VALUES (?, ?)";
-    return (await this.conn.query(insertQuery, [user.id, token]))[0]
-      .affechedRows as number;
+    await this.conn.query(insertQuery, [user.id, token])
+    return 1;
   }
 }
