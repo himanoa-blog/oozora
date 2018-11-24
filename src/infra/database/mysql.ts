@@ -11,7 +11,13 @@ const connectionConfig: mysql.PoolConfig = {
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || "", 10),
   database: process.env.DB_NAME,
-  connectionLimit: 10
+  connectionLimit: 10,
+  typeCast: function(field, next) {
+    if (field.type == "TINY" && field.length == 1) {
+      return field.string() == "1"; // 1 = true, 0 = false
+    }
+    return next();
+  }
 };
 
 const pool = mysql.createPool(connectionConfig);

@@ -14,12 +14,13 @@ export async function parseEntry(
 ): Promise<Entry> {
   const validator = Joi.object()
     .keys({
+      id: Joi.number().required(),
       title: Joi.string().required(),
       body: Joi.string().required(),
       published: Joi.boolean().required(),
-      user_id: Joi.number().required(),
-      updated_at: Joi.date().required(),
-      created_at: Joi.date().required()
+      userId: Joi.number().required(),
+      updatedAt: Joi.date().required(),
+      createdAt: Joi.date().required()
     })
     .rename("user_id", "userId")
     .rename("updated_at", "updatedAt")

@@ -6,8 +6,8 @@ import { Entry, parseEntry } from "../model/entry";
 import { NewEntry } from "../model/new-entry";
 
 export class EntryNotFoundException extends Error {
-  constructor(msg: string) { 
-    super(msg)
+  constructor(msg: string) {
+    super(msg);
   }
 }
 
@@ -16,7 +16,7 @@ export class MySqlEntryRepository implements EntryRepository {
 
   async list(user: User, offset: number, limit: number): Promise<Entry[]> {
     const query = "SELECT * FROM `entries` WHERE `user_id`=? LIMIT ?, ?;";
-    const result = await this.conn.query(query, [user.id, offset, limit]);
+    const result = await this.conn.query(query, [user.id, limit, offset]);
     return await Promise.all(result.map(val => parseEntry(val)));
   }
 

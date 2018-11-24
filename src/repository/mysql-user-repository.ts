@@ -43,8 +43,8 @@ export class MySqlUserRepository implements UserRepository {
     const query =
       "SELECT * FROM `tokens` JOIN `users` ON `users`.`id`=`tokens`.`user_id` WHERE `token`=? LIMIT 1;";
     const result = await this.conn.query(query, [token]);
-    console.log(result)
-    if(!result[0]) {
+    console.log(result);
+    if (!result[0]) {
       throw new UserNotFound(`token ${token} is not found`);
     }
     return {
@@ -59,7 +59,7 @@ export class MySqlUserRepository implements UserRepository {
   async createToken(user: User, token: string): Promise<number> {
     const insertQuery =
       "INSERT INTO `tokens` (`user_id`, `token`) VALUES (?, ?)";
-    await this.conn.query(insertQuery, [user.id, token])
+    await this.conn.query(insertQuery, [user.id, token]);
     return 1;
   }
 }

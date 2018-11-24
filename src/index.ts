@@ -94,7 +94,7 @@ app.get("/", (_, res) => {
   return res.send("hello");
 });
 
-app.options('*', (req, res) => {
+app.options("*", (req, res) => {
   res.sendStatus(200);
 });
 

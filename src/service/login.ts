@@ -63,7 +63,7 @@ export async function login(
       throw err;
     });
     const token = dep.generateToken();
-    dep.userRepository.createToken(user, token);
+    await dep.userRepository.createToken(user, token);
     return {
       id: user.id,
       token,
