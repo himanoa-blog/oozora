@@ -3,6 +3,7 @@ import * as mysql from "promise-mysql";
 import { EntryRepository } from "./entry-repository";
 import { User } from "../model/user";
 import { Entry, parseEntry } from "../model/entry";
+import { EditEntry } from "../model/edit-entry";
 import { NewEntry } from "../model/new-entry";
 
 export class EntryNotFoundException extends Error {
@@ -38,7 +39,7 @@ export class MySqlEntryRepository implements EntryRepository {
     return (await Promise.all(result.map(parseEntry)))[0];
   }
 
-  async update(entry: Entry): Promise<boolean> {
+  async update(entry: EditEntry): Promise<boolean> {
     const query =
       "UPDATE `entries` SET `title`=? `body`=? `published`=? WHERE `id`=?";
     const result = await this.conn.query(query, [

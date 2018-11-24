@@ -4,6 +4,9 @@ import sqlPool from "../infra/database/mysql";
 import { MySqlEntryRepository } from "../repository/mysql-entry-repository";
 import { MySqlUserRepository } from "../repository/mysql-user-repository";
 import { NewEntry, parseNewEntry } from "../model/new-entry";
+import { EditEntry, parseEditEntry } from "../model/edit-entry";
+import { Entry, parseEntry } from "../model/entry";
+import { createEntry, updateEntry } from "../service/EntryService"
 import { wrapAsync } from "./error-handler";
 
 const router = Express.Router();
@@ -67,6 +70,24 @@ router.get(
     res.status(200).json(entry);
   })
 );
+
+router.put(
+  "/:id",
+  wrapAsync(async (req, res) => {
+    const authHeader = req.headers.authorization || "";
+    const [_, token = ""] = authHeader.split(" ");
+    const userRepository = new MySqlUserRepository(sqlPool)
+    const user = await userRepository.fromToken(token);
+    const entry = await parseEditEntry(req.body)
+    
+    await updateEntry(entry, {
+      entryRepository: new MySqlEntryRepository(sqlPool),
+      userRepository
+    })
+
+    res.sendStatus(204);
+  })
+)
 
 export default {
   path: "/entries",
