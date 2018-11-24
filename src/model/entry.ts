@@ -7,6 +7,7 @@ export interface Entry {
   published: boolean;
   updatedAt: Date;
   createdAt: Date;
+  userId: number;
 }
 
 export async function parseEntry(
