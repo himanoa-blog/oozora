@@ -24,10 +24,10 @@ export interface UpdateEntryDep {
   userRepository: UserRepository;
 }
 
-export async function updateEntry(editEntry: EditEntry, dep: UpdateEntryDep): Promise<boolean>{
-  const entry = await dep.entryRepository.resolve(editEntry.id)
-  if(entry.userId !== editEntry.userId) {
-    throw new EditForbiddenError(`${editEntry.userId} is not ${entry.userId}`)
+export async function updateEntry(targetId: number, userId: number, editEntry: EditEntry, dep: UpdateEntryDep): Promise<boolean>{
+  const entry = await dep.entryRepository.resolve(targetId)
+  if(entry.userId !== userId) {
+    throw new EditForbiddenError(`${userId} is not ${entry.userId}`)
   }
-  return await dep.entryRepository.update(editEntry);
+  return await dep.entryRepository.update(targetId, editEntry);
 }

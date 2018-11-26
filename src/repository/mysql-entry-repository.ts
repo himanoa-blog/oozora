@@ -39,14 +39,14 @@ export class MySqlEntryRepository implements EntryRepository {
     return (await Promise.all(result.map(parseEntry)))[0];
   }
 
-  async update(entry: EditEntry): Promise<boolean> {
+  async update(id: number, entry: EditEntry): Promise<boolean> {
     const query =
-      "UPDATE `entries` SET `title`=? `body`=? `published`=? WHERE `id`=?";
+      "UPDATE `entries` SET `title`=?, `body`=?, `published`=? WHERE `id`=?";
     const result = await this.conn.query(query, [
       entry.title,
       entry.body,
       entry.published,
-      entry.id
+      id
     ]);
     return true;
   }

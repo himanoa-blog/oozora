@@ -80,7 +80,7 @@ router.put(
     const user = await userRepository.fromToken(token);
     const entry = await parseEditEntry(req.body)
     
-    await updateEntry(entry, {
+    await updateEntry(parseInt(req.params.id, 10), user.id, entry, {
       entryRepository: new MySqlEntryRepository(sqlPool),
       userRepository
     })
