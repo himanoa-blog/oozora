@@ -7,16 +7,20 @@ import { NewEntry } from "../model/new-entry";
 
 export class EditForbiddenError extends Error {
   constructor(msg: string) {
-    super(msg)
+    super(msg);
   }
 }
 
 export interface CreateEntryDep {
-  entryRepository: EntryRepository
+  entryRepository: EntryRepository;
 }
 
-export async function createEntry(user: User, newEntry: NewEntry, dep: CreateEntryDep) {
-  await dep.entryRepository.create(user, newEntry)
+export async function createEntry(
+  user: User,
+  newEntry: NewEntry,
+  dep: CreateEntryDep
+) {
+  await dep.entryRepository.create(user, newEntry);
 }
 
 export interface UpdateEntryDep {
@@ -24,10 +28,15 @@ export interface UpdateEntryDep {
   userRepository: UserRepository;
 }
 
-export async function updateEntry(targetId: number, userId: number, editEntry: EditEntry, dep: UpdateEntryDep): Promise<boolean>{
-  const entry = await dep.entryRepository.resolve(targetId)
-  if(entry.userId !== userId) {
-    throw new EditForbiddenError(`${userId} is not ${entry.userId}`)
+export async function updateEntry(
+  targetId: number,
+  userId: number,
+  editEntry: EditEntry,
+  dep: UpdateEntryDep
+): Promise<boolean> {
+  const entry = await dep.entryRepository.resolve(targetId);
+  if (entry.userId !== userId) {
+    throw new EditForbiddenError(`${userId} is not ${entry.userId}`);
   }
   return await dep.entryRepository.update(targetId, editEntry);
 }

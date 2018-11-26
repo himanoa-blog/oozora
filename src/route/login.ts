@@ -18,44 +18,55 @@ import memcachedConn from "../infra/database/memcached";
 
 const router = Express.Router();
 
-const authCheck = (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+const authCheck = (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
   if (!req.headers.authorization) {
     res.status(403).json({ error: "No credential sent." });
   } else {
     next();
   }
 };
-router.get("/check", authCheck, wrapAsync(async (req, res) => {
-  const authHeader = req.headers.authorization || "";
-  const [_, token = ""] = authHeader.split(" ");
-  const user = await new MySqlUserRepository(sqlPool)
-    .fromToken(token)
-    .catch(err => res.status(404).json({error: err.msg}));
-  return res.status(200).json(user);
-}))
+router.get(
+  "/check",
+  authCheck,
+  wrapAsync(async (req, res) => {
+    const authHeader = req.headers.authorization || "";
+    const [_, token = ""] = authHeader.split(" ");
+    const user = await new MySqlUserRepository(sqlPool)
+      .fromToken(token)
+      .catch(err => res.status(404).json({ error: err.msg }));
+    return res.status(200).json(user);
+  })
+);
 
 router.get("/oauth/setup", (req, res) => {
   res.sendStatus(200);
 });
 
-router.get("/oauth/google", wrapAsync(async (req, res, _next) => {
-  const salt = "a";
-  const state = createHash("sha256")
-    .update(`${salt}${Math.random()}${+new Date()}`)
-    .digest("hex");
-  const params = new url.URLSearchParams({
-    response_type: "code",
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URL,
-    scope: "profile",
-    state
-  });
-  req!.session!.state = state;
-  await new MemcachedOAuthStateRepository(memcachedConn).write(state);
-  return res.json({
-    url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  });
-}));
+router.get(
+  "/oauth/google",
+  wrapAsync(async (req, res, _next) => {
+    const salt = "a";
+    const state = createHash("sha256")
+      .update(`${salt}${Math.random()}${+new Date()}`)
+      .digest("hex");
+    const params = new url.URLSearchParams({
+      response_type: "code",
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URL,
+      scope: "profile",
+      state
+    });
+    req!.session!.state = state;
+    await new MemcachedOAuthStateRepository(memcachedConn).write(state);
+    return res.json({
+      url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+    });
+  })
+);
 
 router.post(
   "/oauth/google",
