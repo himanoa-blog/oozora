@@ -51,6 +51,10 @@ function cors(
     process.env.CORS_URLS || "http://localhost:4444"
   );
   res.header(
+    "Access-Control-Allow-Methods",
+    "POST, GET, PUT, OPTIONS"
+  )
+  res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, x-xsrf-token, Authorization"
   );
